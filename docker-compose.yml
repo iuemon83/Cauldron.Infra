@@ -1,0 +1,23 @@
+version: "3"
+services:
+  nginx:
+    build: ./nginx
+    ports:
+      - 80:80
+
+  cauldron.web.server:
+    build:
+      context: ./Cauldron
+      dockerfile: Cauldron.Web.Server/Dockerfile
+
+  cauldron.web:
+    build:
+      context: ./Cauldron.Web
+      dockerfile: Dockerfile
+
+  cauldron.game.server:
+    build:
+      context: ./Cauldron
+      dockerfile: Cauldron.Server/Dockerfile
+    ports: 
+      - 5000:80
