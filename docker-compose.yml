@@ -1,9 +1,11 @@
 version: "3"
 services:
-  nginx:
-    build: ./nginx
-    ports:
-      - 80:80
+  cauldron.game.server:
+    build:
+      context: ./Cauldron
+      dockerfile: Cauldron.Server/Dockerfile
+    ports: 
+      - 5000:80
 
   cauldron.web.server:
     build:
@@ -15,9 +17,22 @@ services:
       context: ./Cauldron.Web
       dockerfile: Dockerfile
 
-  cauldron.game.server:
-    build:
-      context: ./Cauldron
-      dockerfile: Cauldron.Server/Dockerfile
-    ports: 
-      - 5000:80
+  nginx:
+    build: ./nginx
+    depends_on:
+      - cauldron.web.server
+      - cauldron.web
+
+  https-portal:
+    image: steveltn/https-portal:1
+    ports:
+      - 80:80
+      - 443:443
+    restart: always
+    environment:
+      DOMAINS: 'cauldron.iuemon.xyz -> http://nginx:80'
+      STAGE: 'production' # Don't use production until staging works
+    volumes:
+      - ./ssl-certs:/var/lib/https-portal
+    depends_on:
+      - nginx
